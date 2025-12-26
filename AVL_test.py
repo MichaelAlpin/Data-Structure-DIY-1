@@ -1,4 +1,7 @@
 from AVL import AVLTree, AVLNode
+from print_tree import TreePrinter
+def array_to_str(arr):
+    return "[" + ", ".join(f"(Key: {node.key}, Val: {val})" for node, val in arr) + "]"
 
 def print_tree_status(tree, action_name):
     print(f"\n--- After {action_name} ---")
@@ -6,7 +9,7 @@ def print_tree_status(tree, action_name):
     root = tree.get_root()
     print(f"Root: {root.key if root and root.is_real_node() else 'None'}")
     print(f"Max Node: {tree.max_node().key if tree.max_node() and hasattr(tree.max_node(), 'key') else 'None'}")
-    print(f"Array (Inorder): {tree.avl_to_array()}")
+    print(f"Array (Inorder): {array_to_str(tree.avl_to_array())}")
 
 def test_avl_tree():
     tree = AVLTree()
@@ -58,6 +61,12 @@ def test_avl_tree():
     for node_obj, val in res:
         print(f"  - Key: {node_obj.key}, Height: {node_obj.height}, Parent: {node_obj.parent.key if node_obj.parent else 'None'}")
 
+        # בתוך קובץ הטסטים
+    print(f"\nVisual Tree Structure for key {k}:")
+    TreePrinter.print_tree(tree.root, tree.virtual_node)
+    print("-" * 20)
+
+    
 if __name__ == "__main__":
     try:
         test_avl_tree()
@@ -66,3 +75,4 @@ if __name__ == "__main__":
         print(f"\n[ERROR] Tester failed with: {e}")
         import traceback
         traceback.print_exc()
+
