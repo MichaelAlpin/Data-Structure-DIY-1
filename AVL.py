@@ -308,6 +308,41 @@ class AVLTree(object):
         counter += 1
         node.update_height()
         return self.__rebalace__(node.parent, counter)
+    
+    """returns the successor of node
+
+    @type node: AVLNode
+    @pre: node is a real pointer to a node in self
+    @rtype: AVLNode
+    @returns: a pointer to the successor of node
+    """
+    def successor(self, node):
+        if node.right != self.virtual_node:
+            # Case 1: node has a right child
+            currentNode = node.right
+            while currentNode.left != self.virtual_node:
+                currentNode = currentNode.left
+            return currentNode
+        else:
+            # Case 2: node has no right child
+            currentNode = node
+            while currentNode.parent != None:
+                previousNode = currentNode
+                currentNode = currentNode.parent
+                if previousNode == currentNode.left:
+                    return currentNode
+            return None
+        
+    """updates the height of all of the ancestors of the node 
+
+    @type node: AVLNode
+    @pre: node is a real pointer to a node in self
+    """
+    def update_height_from_node(self, node):
+        currentNode = node
+        while currentNode.parent != None:
+            currentNode = currentNode.parent
+            currentNode.update_height()
 
     """deletes node from the dictionary
 
@@ -315,9 +350,60 @@ class AVLTree(object):
     @pre: node is a real pointer to a node in self
     """
     def delete(self, node):
-        return	
+        # Max update
+        if self.max == node:
+            self.max = node.parent
 
-    
+        if node.left == self.virtual_node and node.right == self.virtual_node:
+            # Case 1: node is a leaf
+            if node.parent.key > node.key:
+                node.parent.left = self.virtual_node
+            else:
+                node.parent.right = self.virtual_node
+            # Height update
+            self.update_height_from_node(node)
+        elif node.left == self.virtual_node or node.right == self.virtual_node:
+            # Case 2: node has only one child:
+            if node.left == self.virtual_node:
+                # Node has one right child
+                if node.parent.key > node.key:
+                    # Node is a left child
+                    node.parent.left = node.right
+                else:
+                    # Node is a right child
+                    node.parent.right = node.right
+            else:
+                # Node has one left child
+                if node.parent.key > node.key:
+                    # Node is a left child
+                    node.parent.left = node.left
+                else:
+                    # Node is a right child
+                    node.parent.right = node.left
+            # Height update
+            self.update_height_from_node(node)
+        else:
+            # Case 3: node has 2 children
+            nodeSuccessor = self.successor(node)
+            self.delete(nodeSuccessor)
+            nodeSuccessor.parent = node.parent
+            nodeSuccessor.right = node.right
+            nodeSuccessor.left = node.left
+            if node.parent != None:
+                if node == node.parent.left:
+                    # Node is a left child
+                    node.parent.left = nodeSuccessor
+                else:
+                    # Node is a right child
+                    node.parent.right = nodeSuccessor
+
+        # Delete the node attributes
+        node.parent = None
+        node.right = None
+        node.left = None
+
+        return
+
     """joins self with item and another AVLTree
 
     @type tree2: AVLTree 
