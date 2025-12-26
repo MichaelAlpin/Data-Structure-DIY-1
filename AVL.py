@@ -75,8 +75,8 @@ class AVLTree(object):
     def __init__(self):
         self.virtual_node = AVLNode()
         self.root = None
-        self.size = 0
-        self.max_node = None
+        self.tree_size = 0
+        self.max = None
 
     
 
@@ -104,7 +104,7 @@ class AVLTree(object):
     and e is the number of edges on the path between the starting node and ending node+1.
     """
     def __rec_search__(self, node, key, path_len):
-        if node is self.virtual_node:
+        if node is self.virtual_node or node is None:
             return None, path_len + 1
         if key == node.key:
             return node, path_len + 1
@@ -137,18 +137,18 @@ class AVLTree(object):
     and h is the number of PROMOTE cases during the AVL rebalancing
     """
     def insert(self, key, val):
-        self.size += 1
+        self.tree_size += 1
         if self.root is None or self.root is self.virtual_node:
             new_node = AVLNode(key, val)
             new_node.left = self.virtual_node
             new_node.right = self.virtual_node
             self.root = new_node
-            self.max_node = new_node
+            self.max = new_node
             new_node.update_height()
             return new_node, 0, 0
         x, e = self.__rec_insert__(key, val, self.root, 0)
-        if key > self.max_node.key:
-            self.max_node = x
+        if key > self.max.key:
+            self.max = x
         h = self.__rebalace__(x.parent, 0)
         return x, e, h
     
@@ -373,7 +373,7 @@ class AVLTree(object):
     @returns: the maximal node, None if the dictionary is empty
     """
     def max_node(self):
-        return self.max_node
+        return self.max
 
     """returns the number of items in dictionary 
 
@@ -381,7 +381,7 @@ class AVLTree(object):
     @returns: the number of items in dictionary 
     """
     def size(self):
-        return self.size	
+        return self.tree_size	
 
 
     """returns the root of the tree representing the dictionary
